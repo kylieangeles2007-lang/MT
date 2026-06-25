@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en" data-theme="aurora">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#061018" />
+  <meta name="description" content="Money Tracker PH - a GoTyme-inspired offline expense, savings, cash, InstaPay, deposit, withdrawal, and transfer tracker." />
+  <title>Money Tracker PH - 1000x Money OS</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("moneyTrackerPH.theme") || "aurora";
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {}
+    }());
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient ambient-a" aria-hidden="true"></div>
+  <div class="ambient ambient-b" aria-hidden="true"></div>
+  <div class="ambient ambient-c" aria-hidden="true"></div>
+  <div class="starfield" aria-hidden="true"></div>
+  <div class="scanline" aria-hidden="true"></div>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="app-header">
+    <div class="topbar">
+      <button class="brand-pill" data-open-tab="dashboard" type="button" aria-label="Open dashboard">
+        <span class="app-mark" aria-hidden="true">MT</span>
+        <span>
+          <strong>Money Tracker PH</strong>
+          <small>1000x Money OS</small>
+        </span>
+      </button>
+      <div class="topbar-actions">
+        <button id="themeToggle" class="ghost-button small topbar-button" type="button" aria-label="Change theme">Aurora mode</button>
+        <button id="installButton" class="primary-button small install-button" type="button" hidden>Install</button>
+      </div>
+    </div>
+
+    <div class="hero-grid">
+      <section class="hero-copy" aria-labelledby="hero-title">
+        <div class="hero-eyebrow"><span class="live-dot"></span> GoTyme-inspired personal tracker</div>
+        <h1 id="hero-title">Your money, explained like a movie.</h1>
+        <p class="header-subtitle">A private offline dashboard for Cash, GoTyme, Go Save, InstaPay fees, deposits, withdrawals, transfers, savings in/out, and every peso that disappears.</p>
+        <div class="hero-actions">
+          <button class="primary-button hero-button" data-open-tab="add" type="button">Log money move</button>
+          <button class="ghost-button hero-button" data-open-tab="history" type="button">Open audit trail</button>
+        </div>
+        <div class="trust-strip" aria-label="App notes">
+          <span>Offline first</span>
+          <span>No bank login</span>
+          <span>Phone + laptop ready</span>
+          <span>Backup export</span>
+        </div>
+        <p class="theme-note">Personal tracker theme only. Not affiliated with, connected to, or endorsed by GoTyme Bank.</p>
+      </section>
+
+      <aside class="hero-visual" aria-label="Live app preview">
+        <div class="holo-ring" aria-hidden="true"></div>
+        <div class="phone-preview">
+          <div class="phone-frame">
+            <div class="phone-status" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="preview-topline">
+              <span>Every Peso Account</span>
+              <strong>LIVE</strong>
+            </div>
+            <div id="previewBalance" class="preview-balance">₱0.00</div>
+            <div class="preview-card">
+              <div class="preview-card-top"><span>Money OS</span><span>1000x</span></div>
+              <div class="preview-chip" aria-hidden="true"></div>
+              <div class="preview-card-bottom"><span>Cash</span><span>GoTyme</span><span>Go Save</span></div>
+            </div>
+            <div class="preview-grid">
+              <div><span>Spent today</span><strong id="previewTodaySpent">₱0.00</strong></div>
+              <div><span>Savings now</span><strong id="previewSavings">₱0.00</strong></div>
+            </div>
+            <button class="preview-plus" data-open-tab="add" type="button" aria-label="Add transaction">+</button>
+            <div class="preview-pill">money in • money out • savings flow</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </header>
+
+  <nav class="tab-bar" aria-label="Main sections">
+    <button class="tab-button active" data-tab="dashboard" type="button"><span class="tab-icon">⌁</span><span>Pulse</span></button>
+    <button class="tab-button" data-tab="add" type="button"><span class="tab-icon">+</span><span>Add</span></button>
+    <button class="tab-button" data-tab="history" type="button"><span class="tab-icon">⌕</span><span>History</span></button>
+    <button class="tab-button" data-tab="accounts" type="button"><span class="tab-icon">◈</span><span>Wallets</span></button>
+    <button class="tab-button" data-tab="backup" type="button"><span class="tab-icon">⇣</span><span>Backup</span></button>
+  </nav>
+
+  <main id="main" class="app-shell">
+    <section id="dashboard" class="tab-panel active" aria-labelledby="dashboard-title">
+      <div class="section-heading section-heading-hero">
+        <div>
+          <p class="section-kicker">Money command center</p>
+          <h2 id="dashboard-title">Dashboard</h2>
+          <p>See exactly how your money changed today and this month.</p>
+        </div>
+        <button class="primary-button small" data-open-tab="add" type="button">Log move</button>
+      </div>
+
+      <article id="commandCard" class="command-card" aria-label="Money pulse summary"></article>
+      <div id="insightsRail" class="insights-rail" aria-label="Quick money insights"></div>
+      <article id="moneyNarrative" class="narrative-card" aria-label="Money story summary"></article>
+      <div class="stats-grid" id="statsGrid"></div>
+      <div id="moneyStory" class="money-story-grid" aria-label="Savings flow summary"></div>
+      <article id="weekFlow" class="card week-flow-card" aria-label="Last seven days cash flow"></article>
+
+      <div class="two-column">
+        <article class="card wallet-stack-card">
+          <div class="card-heading">
+            <div><p class="mini-kicker">Wallet stack</p><h3>Wallet balances</h3></div>
+            <button class="text-button" data-open-tab="accounts" type="button">Manage</button>
+          </div>
+          <div id="balanceCards" class="balance-list"></div>
+        </article>
+
+        <article class="card category-card">
+          <div class="card-heading">
+            <div><p class="mini-kicker">Spending constellation</p><h3>This month spending</h3></div>
+            <span id="monthLabel" class="pill"></span>
+          </div>
+          <div id="categoryBreakdown" class="category-list empty-state"></div>
+        </article>
+      </div>
+
+      <article class="card recent-card">
+        <div class="card-heading">
+          <div><p class="mini-kicker">Latest activity</p><h3>Recent money movement</h3></div>
+          <button class="text-button" data-open-tab="history" type="button">View all</button>
+        </div>
+        <div id="recentTransactions" class="transaction-list empty-state"></div>
+      </article>
+    </section>
+
+    <section id="add" class="tab-panel" aria-labelledby="add-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Fast capture cockpit</p>
+          <h2 id="add-title">Add transaction</h2>
+          <p>Expense means money spent. Income means new money. Transfer means moving your own money between wallets.</p>
+        </div>
+      </div>
+
+      <article class="card composer-card">
+        <div class="composer-banner">
+          <div>
+            <span class="mini-kicker">One-tap templates</span>
+            <h3>Pick the move that happened</h3>
+          </div>
+          <span class="spark-badge">Less thinking, more tracking</span>
+        </div>
+
+        <div class="quick-actions" aria-label="Quick transaction templates">
+          <button class="chip" data-template="cash-expense" type="button"><span class="chip-icon">₱</span><span><strong>Paid cash</strong><small>Expense from wallet</small></span></button>
+          <button class="chip" data-template="gotyme-expense" type="button"><span class="chip-icon">GT</span><span><strong>Paid via GoTyme</strong><small>Card or app payment</small></span></button>
+          <button class="chip" data-template="instapay-expense" type="button"><span class="chip-icon">IP</span><span><strong>Paid via InstaPay</strong><small>Payment sent out</small></span></button>
+          <button class="chip" data-template="deposit-gotyme" type="button"><span class="chip-icon">IN</span><span><strong>Deposit to GoTyme</strong><small>Move cash or bank money</small></span></button>
+          <button class="chip" data-template="move-to-savings" type="button"><span class="chip-icon">S+</span><span><strong>Move to savings</strong><small>Grow Go Save</small></span></button>
+          <button class="chip" data-template="use-savings" type="button"><span class="chip-icon">S-</span><span><strong>Use savings</strong><small>Withdraw from goals</small></span></button>
+          <button class="chip" data-template="withdraw-cash" type="button"><span class="chip-icon">OUT</span><span><strong>Withdraw cash</strong><small>Bank to cash</small></span></button>
+          <button class="chip" data-template="transfer-money" type="button"><span class="chip-icon">TF</span><span><strong>Transfer money</strong><small>Wallet to wallet</small></span></button>
+        </div>
+
+        <form id="transactionForm" class="form-grid">
+          <input type="hidden" id="editingId" />
+
+          <label>
+            Type
+            <select id="txType" required>
+              <option value="expense">Money out / expense</option>
+              <option value="income">Money in / income</option>
+              <option value="transfer">Transfer between my wallets</option>
+            </select>
+          </label>
+
+          <label>
+            Date
+            <input id="txDate" type="date" required />
+          </label>
+
+          <label>
+            Amount
+            <input id="txAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" required />
+          </label>
+
+          <label class="field-expense field-income">
+            Account / wallet
+            <select id="txAccount"></select>
+          </label>
+
+          <label class="field-transfer">
+            From wallet
+            <select id="txFromAccount"></select>
+          </label>
+
+          <label class="field-transfer">
+            To wallet
+            <select id="txToAccount"></select>
+          </label>
+
+          <label class="field-transfer">
+            Transfer fee, if any
+            <input id="txFee" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" />
+          </label>
+
+          <label class="field-expense">
+            Category
+            <select id="txCategory"></select>
+          </label>
+
+          <label class="field-expense field-income">
+            Payment / movement method
+            <select id="txMethod">
+              <option>Cash</option>
+              <option>GoTyme</option>
+              <option>InstaPay</option>
+              <option>Bank transfer</option>
+              <option>GCash</option>
+              <option>Maya</option>
+              <option>Debit card</option>
+              <option>Other</option>
+            </select>
+          </label>
+
+          <label class="field-transfer">
+            Transfer label
+            <select id="txTransferLabel">
+              <option>InstaPay transfer</option>
+              <option>Deposit to GoTyme</option>
+              <option>Move to savings</option>
+              <option>Withdraw from savings</option>
+              <option>Withdraw cash</option>
+              <option>Own account transfer</option>
+              <option>Other transfer</option>
+            </select>
+          </label>
+
+          <label>
+            Store / person / source
+            <input id="txPayee" type="text" maxlength="80" placeholder="Example: Jollibee, rent, salary, friend" />
+          </label>
+
+          <label class="wide">
+            Notes
+            <textarea id="txNotes" rows="3" maxlength="240" placeholder="Optional: reference number, reason, item bought, etc."></textarea>
+          </label>
+
+          <div class="form-actions wide">
+            <button id="saveTransactionButton" class="primary-button" type="submit">Save transaction</button>
+            <button id="cancelEditButton" class="ghost-button" type="button" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </article>
+    </section>
+
+    <section id="history" class="tab-panel" aria-labelledby="history-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Searchable audit trail</p>
+          <h2 id="history-title">History</h2>
+          <p>Search or filter your money movement. Edit or delete mistakes anytime.</p>
+        </div>
+      </div>
+
+      <article class="card history-card">
+        <div class="filters">
+          <label>
+            Search
+            <input id="historySearch" type="search" placeholder="Store, note, category, method" />
+          </label>
+          <label>
+            Type
+            <select id="historyType">
+              <option value="all">All</option>
+              <option value="expense">Expenses</option>
+              <option value="income">Income</option>
+              <option value="transfer">Transfers</option>
+              <option value="adjustment">Balance corrections</option>
+            </select>
+          </label>
+          <label>
+            Month
+            <input id="historyMonth" type="month" />
+          </label>
+        </div>
+        <div id="historyList" class="transaction-list empty-state"></div>
+      </article>
+    </section>
+
+    <section id="accounts" class="tab-panel" aria-labelledby="accounts-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Your money places</p>
+          <h2 id="accounts-title">Accounts & wallets</h2>
+          <p>Add each place where money can sit: Cash, GoTyme, bank, GCash, savings, or envelope.</p>
+        </div>
+      </div>
+
+      <div class="two-column">
+        <article class="card">
+          <div class="card-heading">
+            <div><p class="mini-kicker">Balance console</p><h3>Your wallets</h3></div>
+          </div>
+          <div id="accountsList" class="accounts-list"></div>
+        </article>
+
+        <article class="card add-wallet-card">
+          <div class="card-heading">
+            <div><p class="mini-kicker">Create wallet</p><h3>Add wallet</h3></div>
+          </div>
+          <form id="accountForm" class="stacked-form">
+            <label>
+              Wallet name
+              <input id="accountName" type="text" maxlength="40" placeholder="Example: GoTyme, Go Save, Cash, BPI" required />
+            </label>
+            <label>
+              Type
+              <select id="accountType">
+                <option>Cash</option>
+                <option>GoTyme / Bank</option>
+                <option>Bank</option>
+                <option>E-wallet</option>
+                <option>Savings / Go Save</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>
+              Starting balance
+              <input id="accountBalance" type="number" step="0.01" inputmode="decimal" placeholder="0.00" />
+            </label>
+            <button class="primary-button" type="submit">Add wallet</button>
+          </form>
+        </article>
+      </div>
+    </section>
+
+    <section id="backup" class="tab-panel" aria-labelledby="backup-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Data safety vault</p>
+          <h2 id="backup-title">Backup, export, restore</h2>
+          <p>Your data is saved only inside this browser/device. Export a backup to move it to another phone or laptop.</p>
+        </div>
+      </div>
+
+      <div class="two-column">
+        <article class="card vault-card">
+          <div class="card-heading">
+            <div><p class="mini-kicker">Take your data</p><h3>Export</h3></div>
+          </div>
+          <p class="muted">Download a backup file or a CSV spreadsheet. Keep the backup somewhere safe.</p>
+          <div class="button-row">
+            <button id="exportJsonButton" class="primary-button" type="button">Download backup JSON</button>
+            <button id="exportCsvButton" class="ghost-button" type="button">Download CSV</button>
+          </div>
+        </article>
+
+        <article class="card vault-card">
+          <div class="card-heading">
+            <div><p class="mini-kicker">Bring it back</p><h3>Restore</h3></div>
+          </div>
+          <p class="muted">Restore replaces the data on this device with the backup you choose.</p>
+          <label class="file-drop">
+            Choose backup JSON
+            <input id="importFile" type="file" accept="application/json,.json" />
+          </label>
+          <button id="resetButton" class="danger-button" type="button">Reset all data</button>
+        </article>
+      </div>
+
+      <article class="card tips-card">
+        <div class="card-heading">
+          <div><p class="mini-kicker">How to avoid losing track</p><h3>Every peso needs a trail</h3></div>
+        </div>
+        <ol>
+          <li>Set the correct starting balance for Cash, GoTyme, Go Save, and bank.</li>
+          <li>When you pay with cash, record it as an expense from Cash.</li>
+          <li>When you send InstaPay to someone as payment, record it as an expense from the wallet/bank used.</li>
+          <li>When you move your own money, like Cash to GoTyme, GoTyme to Go Save, or Go Save back to Cash, record it as a transfer, not an expense.</li>
+          <li>If the app balance does not match real life, use Set actual balance in Accounts. The app will record the correction so you know there was a mismatch.</li>
+        </ol>
+      </article>
+    </section>
+  </main>
+
+  <button class="floating-add" data-open-tab="add" type="button" aria-label="Add transaction">+</button>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
